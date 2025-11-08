@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --bg-color: #f4f7f6;
+            --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            --border-radius: 8px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .page { display: none; }
+        #app { transition: all 0.3s ease-in-out; }
+        #loginPage {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-page-title {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 300;
+            color: var(--dark-color);
+            margin-bottom: 30px;
+        }
+        .login-container {
+            background-color: white;
+            padding: 0;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 28rem;
+            overflow: hidden;
+        }
+        .login-nav { display: flex; background: var(--light-color); }
+        .login-nav-btn {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+            transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+        .login-nav-btn:hover:not(.active) {
+            color: var(--dark-color);
+            background-color: #e9ecef;
+        }
+        .login-nav-btn[data-active="true"] {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        .login-form { display: none; padding: 30px; }
+        .login-form[data-active="true"] { display: block; }
+        .form-title {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 300;
+            margin-bottom: 25px;
+            color: var(--dark-color);
+        }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: linear-gradient(90deg, var(--dark-color) 0%, #495057 100%);
+            color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-header h1 { font-size: 1.5rem; font-weight: 500; }
+        .dashboard-header span { font-weight: 300; }
+        .dashboard-container { padding: 30px; max-width: 1200px; margin: 0 auto; }
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        .form-grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            justify-items: center;
+            margin-bottom: 25px;
+        }
+        .card.data-card {
+            grid-column: 1 / -1;
+        }
+        .card {
+            background: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+        }
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            border-radius: var(--border-radius);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        .btn-primary { background: var(--primary-color); color: #fff; }
+        .btn-primary:hover { background: #0069d9; transform: translateY(-2px); }
+        .btn-danger { background: var(--danger-color); color: #fff; }
+        .btn-danger:hover { background: #c82333; transform: translateY(-2px); }
+        .btn-secondary { background: var(--secondary-color); color: #fff; }
+        .btn-secondary:hover { background: #5a6268; transform: translateY(-2px); }
+        .btn-small { width: auto; padding: 5px 10px; font-size: 0.85rem; }
+        .btn-logout {
+            padding: 8px 16px;
+            background-color: var(--danger-color);
+            color: white;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-logout:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .grid-container .card,
+        .form-grid-container .form-container {
+            animation: fadeIn 0.5s ease-out forwards;
+            opacity: 0;
+        }
+        .grid-container .card:nth-child(1),
+        .form-grid-container .form-container:nth-child(1) { animation-delay: 0.1s; }
+        .grid-container .card:nth-child(2),
+        .form-grid-container .form-container:nth-child(2) { animation-delay: 0.2s; }
+        .form-container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 40rem;
+        }
+        .table-container {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            background: #fff;
+            overflow-x: auto;
+        }
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.5); }
+        .modal-content { max-height: 90vh; }
+        .spinner {
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spinner-container {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+        }
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        .data-table thead {
+            background-color: var(--light-color);
+        }
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: middle;
+        }
+        .data-table th {
+            font-weight: 600;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .data-table tbody tr:hover {
+            background-color: #fcfcfc;
+        }
+        .data-table .actions-cell {
+            text-align: right;
+        }
+        .data-table .actions-cell .btn {
+            width: auto;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div id="app">
+
+    <div id="loginPage" class="page">
+        <h1 class="login-page-title">Student Management System</h1>
+        <div class="login-container">
+            <nav class="login-nav">
+                <button class="login-nav-btn" data-target="admin" data-active="true">Admin</button>
+                <button class="login-nav-btn" data-target="teacher" data-active="false">Teacher</button>
+                <button class="login-nav-btn" data-target="student" data-active="false">Student</button>
+            </nav>
+            <div id="admin-form" class="login-form" data-active="true">
+                <form id="adminLoginForm">
+                    <h2 class="form-title">Admin Login</h2>
+                    <div class="form-group">
+                        <label for="admin-login-username">Username</label>
+                        <input type="text" id="admin-login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-login-password">Password</label>
+                        <input type="password" id="admin-login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+            <div id="teacher-form" class="login-form" data-active="false" style="display: none;">
+                <form id="teacherLoginForm">
+                    <h2 class="form-title">Teacher Login</h2>
+                    <div class="form-group">
+                        <label for="teacher-login-username">Username</label>
+                        <input type="text" id="teacher-login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teacher-login-password">Password</label>
+                        <input type="password" id="teacher-login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+            <div id="student-form" class="login-form" data-active="false" style="display: none;">
+                <form id="studentLoginForm">
+                    <h2 class="form-title">Student Login</h2>
+                    <div class="form-group">
+                        <label for="student-login-id">Student ID</label>
+                        <input type="text" id="student-login-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="student-login-password">Password</label>
+                        <input type="password" id="student-login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminDashboardPage" class="page">
+        <header class="dashboard-header">
+            <h1 id="adminWelcomeMessage">Admin Portal</h1>
+            <button id="adminLogoutBtn" class="btn-logout">Logout</button>
+        </header>
+        <main class="dashboard-container">
+            <div class="form-grid-container">
+                <div class="form-container">
+                    <h2 class="text-xl font-semibold text-blue-600 border-b border-gray-200 pb-3 mb-4">Manage Teacher</h2>
+                    <form id="addTeacherForm">
+                        <input type="hidden" id="teacher-form-id">
+                        <div class="form-group">
+                            <label for="teacher-reg-username">Username</label>
+                            <input type="text" id="teacher-reg-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-reg-email">Email</label>
+                            <input type="email" id="teacher-reg-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-reg-department">Department</label>
+                            <input type="text" id="teacher-reg-department" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="teacher-reg-password">Password</label>
+                            <input type="password" id="teacher-reg-password" placeholder="Enter new password if changing" required>
+                        </div>
+                        <button type="submit" id="addTeacherBtn" class="btn btn-primary">Add Teacher</button>
+                        <button type="submit" id="updateTeacherBtn" class="btn btn-secondary" style="display:none; margin-top: 10px;">Update Teacher</button>
+                        <button type="button" id="clearTeacherFormBtn" class="btn" style="background: #eee; color: #333; margin-top: 10px;">Clear Form</button>
+                    </form>
+                </div>
+            </div>
+            <div class="grid-container">
+                <div class="card data-card">
+                    <h2 class="text-xl font-semibold text-blue-600 border-b border-gray-200 pb-3 mb-4">Manage Teachers</h2>
+                    <button id="viewAllTeachersBtn" class="btn btn-secondary" style="margin-bottom: 20px;">View All Teachers</button>
+                    <div class="spinner-container" id="teacherListLoader"><div class="spinner"></div></div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Department</th>
+                                <th>Email</th>
+                                <th class="actions-cell">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody id="teacherList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card data-card">
+                    <h2 class="text-xl font-semibold text-blue-600 border-b border-gray-200 pb-3 mb-4">All Student Grades</h2>
+                    <button id="viewAllMarksBtn" class="btn btn-secondary" style="margin-bottom: 20px;">View All Grades</button>
+                    <div class="spinner-container" id="allMarksListLoader"><div class="spinner"></div></div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Subject</th>
+                                <th>Grade Obtained</th>
+                                <th>Total Grade</th>
+                            </tr>
+                            </thead>
+                            <tbody id="allMarksList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="teacherDashboardPage" class="page">
+        <header class="dashboard-header">
+            <h1 id="teacherWelcomeMessage">Teacher Portal</h1>
+            <button id="teacherLogoutBtn" class="btn-logout">Logout</button>
+        </header>
+        <main class="dashboard-container">
+            <div class="form-grid-container">
+                <div class="form-container">
+                    <h2 class="text-xl font-semibold text-blue-600 border-b border-gray-200 pb-3 mb-4">Manage Student</h2>
+                    <form id="studentManagementForm">
+                        <input type="hidden" id="student-form-id">
+                        <div class="form-group">
+                            <label for="student-name">Student Name</label>
+                            <input type="text" id="student-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-id-field">Student ID (For new students)</label>
+                            <input type="text" id="student-id-field" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-branch">Branch</label>
+                            <input type="text" id="student-branch" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-year">Year</label>
+                            <input type="number" id="student-year" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="student-password">Password</label>
+                            <input type="password" id="student-password" required>
+                        </div>
+                        <button type="submit" id="addStudentBtn" class="btn btn-primary">Add Student</button>
+                        <button type="submit" id="updateStudentBtn" class="btn btn-secondary" style="display:none; margin-top: 10px;">Update Student</button>
+                        <button type="button" id="clearStudentFormBtn" class="btn" style="background: #eee; color: #333; margin-top: 10px;">Clear Form</button>
+                    </form>
+                </div>
+                <div class="form-container">
+                    <h2 class="text-xl font-semibold text-blue-600 border-b border-gray-200 pb-3 mb-4">Assign Grades</h2>
+                    <form id="assignMarksForm">
+                        <div class="form-group">
+                            <label for="marks-student-id">Student ID</label>
+                            <input type="text" id="marks-student-id" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="marks-subject">Subject</label>
+                            <input type="text" id="marks-subject" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="marks-obtained">Grade Obtained</label>
+                            <input type="number" id="marks-obtained" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="marks-total">Total Grade</label>
+                            <input type="number" id="marks-total" step="0.1" value="10" required>
+                        </div>
+                        <button type="submit" id="assignGradesBtn" class="btn btn-primary">Assign Grades (New)</button>
+                        <button type="submit" id="upgradeGradesBtn" class="btn btn-secondary" style="margin-top: 10px;">Upgrade Grades (Update)</button>
+                    </form>
+                </div>
+            </div>
+            <div class="grid-container">
+                <div class="card data-card">
+                    <h2 class="text-xl font-semibold text-blue-600 border-b border-gray-200 pb-3 mb-4">View All Students</h2>
+                    <button id="viewAllStudentsBtn" class="btn btn-secondary" style="margin-bottom: 20px;">View All Students</button>
+                    <div class="spinner-container" id="studentListLoader"><div class="spinner"></div></div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Student ID</th>
+                                <th>Branch</th>
+                                <th>Year</th>
+                                <th class="actions-cell">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="studentList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="studentDashboardPage" class="page">
+        <header class="dashboard-header">
+            <h1 id="studentWelcomeMessage">Student Portal</h1>
+            <button id="studentLogoutBtn" class="btn-logout">Logout</button>
+        </header>
+        <main class="dashboard-container">
+            <div class="grid-container">
+                <div class="card data-card">
+                    <h2 class="text-xl font-semibold text-blue-600 border-b border-gray-200 pb-3 mb-4">My Grades</h2>
+                    <button id="viewMyMarksBtn" class="btn btn-primary" style="margin-bottom: 20px;">View My Grades</button>
+                    <div class="spinner-container" id="myMarksListLoader"><div class="spinner"></div></div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Subject</th>
+                                <th>Grade Obtained</th>
+                                <th>Total Grade</th>
+                            </tr>
+                            </thead>
+                            <tbody id="myMarksList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const API_BASE_URL = 'http://localhost:8080';
+
+        const pages = {
+            login: document.getElementById("loginPage"),
+            admin: document.getElementById("adminDashboardPage"),
+            teacher: document.getElementById("teacherDashboardPage"),
+            student: document.getElementById("studentDashboardPage")
+        };
+
+        const loginNavBtns = document.querySelectorAll(".login-nav-btn");
+        const loginForms = document.querySelectorAll(".login-form");
+        const adminLoginForm = document.getElementById("adminLoginForm");
+        const teacherLoginForm = document.getElementById("teacherLoginForm");
+        const studentLoginForm = document.getElementById("studentLoginForm");
+
+        const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+        const teacherLogoutBtn = document.getElementById("teacherLogoutBtn");
+        const studentLogoutBtn = document.getElementById("studentLogoutBtn");
+
+        const addTeacherForm = document.getElementById("addTeacherForm");
+        const addTeacherBtn = document.getElementById("addTeacherBtn");
+        const updateTeacherBtn = document.getElementById("updateTeacherBtn");
+        const clearTeacherFormBtn = document.getElementById("clearTeacherFormBtn");
+        const teacherFormFieldId = document.getElementById("teacher-form-id");
+        const teacherRegUsername = document.getElementById("teacher-reg-username");
+        const teacherRegEmail = document.getElementById("teacher-reg-email");
+        const teacherRegDept = document.getElementById("teacher-reg-department");
+        const teacherRegPassword = document.getElementById("teacher-reg-password");
+        const viewAllTeachersBtn = document.getElementById("viewAllTeachersBtn");
+        const teacherList = document.getElementById("teacherList");
+        const viewAllMarksBtn = document.getElementById("viewAllMarksBtn");
+        const allMarksList = document.getElementById("allMarksList");
+        const teacherListLoader = document.getElementById("teacherListLoader");
+        const allMarksListLoader = document.getElementById("allMarksListLoader");
+        const adminWelcomeMessage = document.getElementById("adminWelcomeMessage");
+
+        const studentManagementForm = document.getElementById("studentManagementForm");
+        const addStudentBtn = document.getElementById("addStudentBtn");
+        const updateStudentBtn = document.getElementById("updateStudentBtn");
+        const clearStudentFormBtn = document.getElementById("clearStudentFormBtn");
+        const studentFormFieldId = document.getElementById("student-form-id");
+        const studentFieldName = document.getElementById("student-name");
+        const studentFieldId = document.getElementById("student-id-field");
+        const studentFieldBranch = document.getElementById("student-branch");
+        const studentFieldYear = document.getElementById("student-year");
+        const studentFieldPassword = document.getElementById("student-password");
+        const assignMarksForm = document.getElementById("assignMarksForm");
+        const viewAllStudentsBtn = document.getElementById("viewAllStudentsBtn");
+        const studentList = document.getElementById("studentList");
+        const studentListLoader = document.getElementById("studentListLoader");
+        const teacherWelcomeMessage = document.getElementById("teacherWelcomeMessage");
+
+        const studentWelcomeMessage = document.getElementById("studentWelcomeMessage");
+        const viewMyMarksBtn = document.getElementById("viewMyMarksBtn");
+        const myMarksList = document.getElementById("myMarksList");
+        const myMarksListLoader = document.getElementById("myMarksListLoader");
+
+        const smallSpinner = '<div class="spinner" style="width: 16px; height: 16px; border-width: 2px; margin: 0 auto;"></div>';
+
+        function setFormSubmitting(form, isSubmitting, submitter = null) {
+            let button = submitter;
+            if (!button) {
+                button = form.querySelector("button[type='submit']:not([style*='display: none'])");
+                if (!button) {
+                     button = form.querySelector("button[type='submit']");
+                }
+            }
+            if (!button) return;
+            if (isSubmitting) {
+                button.disabled = true;
+                button.dataset.originalText = button.innerHTML;
+                button.innerHTML = smallSpinner;
+            } else {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || 'Submit';
+            }
+        }
+
+        function showPage(pageId) {
+            Object.values(pages).forEach(page => page.style.display = "none");
+            if (pages[pageId]) {
+                if (pageId === 'login') {
+                    pages[pageId].style.display = "flex";
+                } else {
+                    pages[pageId].style.display = "block";
+                }
+            }
+        }
+
+        function checkSession() {
+            const role = sessionStorage.getItem("userRole");
+            const username = sessionStorage.getItem("username");
+            const studentId = sessionStorage.getItem("studentId");
+
+            if (role) {
+                showPage(role.toLowerCase());
+                if(role === 'STUDENT') {
+                    studentWelcomeMessage.innerHTML = `Student Portal <span class="font-light">| Welcome, ${studentId}</span>`;
+                } else if (role === 'ADMIN') {
+                    adminWelcomeMessage.innerHTML = `Admin Portal <span class="font-light">| Welcome, ${username}</span>`;
+                } else if (role === 'TEACHER') {
+                    teacherWelcomeMessage.innerHTML = `Teacher Portal <span class="font-light">| Welcome, ${username}</span>`;
+                }
+            } else {
+                showPage("login");
+            }
+        }
+
+        loginNavBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const targetId = btn.getAttribute("data-target");
+                loginNavBtns.forEach(b => b.dataset.active = "false");
+                btn.dataset.active = "true";
+                loginForms.forEach(form => {
+                    if (form.id === `${targetId}-form`) {
+                        form.style.display = "block";
+                        form.dataset.active = "true";
+                    } else {
+                        form.style.display = "none";
+                        form.dataset.active = "false";
+                    }
+                });
+            });
+        });
+
+        adminLoginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            setFormSubmitting(adminLoginForm, true, e.submitter);
+            const username = document.getElementById("admin-login-username").value;
+            const password = document.getElementById("admin-login-password").value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const token = await response.text();
+                if (!response.ok) throw new Error(token);
+                sessionStorage.setItem("userRole", "ADMIN");
+                sessionStorage.setItem("token", token);
+                sessionStorage.setItem("username", username);
+                adminWelcomeMessage.innerHTML = `Admin Portal <span class="font-light">| Welcome, ${username}</span>`;
+                adminLoginForm.reset();
+                showPage("admin");
+            } catch (error) {
+                console.error("Admin login failed:", error);
+                alert(`Login Failed: ${error.message}`);
+            } finally {
+                setFormSubmitting(adminLoginForm, false, e.submitter);
+            }
+        });
+
+        teacherLoginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            setFormSubmitting(teacherLoginForm, true, e.submitter);
+            const username = document.getElementById("teacher-login-username").value;
+            const password = document.getElementById("teacher-login-password").value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/teacher/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const token = await response.text();
+                if (!response.ok) throw new Error(token);
+                sessionStorage.setItem("userRole", "TEACHER");
+                sessionStorage.setItem("token", token);
+                sessionStorage.setItem("username", username);
+                teacherWelcomeMessage.innerHTML = `Teacher Portal <span class="font-light">| Welcome, ${username}</span>`;
+                teacherLoginForm.reset();
+                showPage("teacher");
+            } catch (error) {
+                console.error("Teacher login failed:", error);
+                alert(`Login Failed: ${error.message}`);
+            } finally {
+                setFormSubmitting(teacherLoginForm, false, e.submitter);
+            }
+        });
+
+        studentLoginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            setFormSubmitting(studentLoginForm, true, e.submitter);
+            const studentId = document.getElementById("student-login-id").value;
+            const password = document.getElementById("student-login-password").value;
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/student/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ studentId, password })
+                });
+                const token = await response.text();
+                if (!response.ok) throw new Error(token);
+                sessionStorage.setItem("userRole", "STUDENT");
+                sessionStorage.setItem("token", token);
+                sessionStorage.setItem("studentId", studentId);
+                studentWelcomeMessage.innerHTML = `Student Portal <span class="font-light">| Welcome, ${studentId}</span>`;
+                studentLoginForm.reset();
+                showPage("student");
+            } catch (error) {
+                console.error("Student login failed:", error);
+                alert(`Login Failed: ${error.message}`);
+            } finally {
+                setFormSubmitting(studentLoginForm, false, e.submitter);
+            }
+        });
+
+        function handleLogout() {
+            sessionStorage.clear();
+            teacherList.innerHTML = "";
+            allMarksList.innerHTML = "";
+            studentList.innerHTML = "";
+            myMarksList.innerHTML = "";
+            adminWelcomeMessage.innerHTML = `Admin Portal`;
+            teacherWelcomeMessage.innerHTML = `Teacher Portal`;
+            studentWelcomeMessage.innerHTML = `Student Portal`;
+            showPage("login");
+        }
+
+        adminLogoutBtn.addEventListener("click", handleLogout);
+        teacherLogoutBtn.addEventListener("click", handleLogout);
+        studentLogoutBtn.addEventListener("click", handleLogout);
+
+        function clearTeacherForm() {
+            addTeacherForm.reset();
+            teacherFormFieldId.value = "";
+            teacherRegPassword.placeholder = "Enter new password if changing";
+            addTeacherBtn.style.display = "block";
+            updateTeacherBtn.style.display = "none";
+            addTeacherBtn.disabled = false;
+            addTeacherBtn.innerHTML = 'Add Teacher';
+            updateTeacherBtn.disabled = false;
+            updateTeacherBtn.innerHTML = 'Update Teacher';
+        }
+
+        clearTeacherFormBtn.addEventListener("click", clearTeacherForm);
+
+        addTeacherForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const isUpdating = !!teacherFormFieldId.value;
+            const submitBtn = isUpdating ? updateTeacherBtn : addTeacherBtn;
+            setFormSubmitting(addTeacherForm, true, submitBtn);
+
+            const teacherData = {
+                id: teacherFormFieldId.value ? parseInt(teacherFormFieldId.value) : null,
+                username: teacherRegUsername.value,
+                email: teacherRegEmail.value,
+                department: teacherRegDept.value,
+                password: teacherRegPassword.value
+            };
+
+            const token = sessionStorage.getItem("token");
+            const url = isUpdating ? `${API_BASE_URL}/admin/updateTeacher` : `${API_BASE_URL}/auth/teacher/register`;
+            const method = isUpdating ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(teacherData)
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(errorText);
+                }
+                if (isUpdating) {
+                    const updatedTeacher = await response.json();
+                    alert(`Teacher ${updatedTeacher.username} updated successfully!`);
+                } else {
+                    const resultText = await response.text();
+                    alert(resultText);
+                }
+                clearTeacherForm();
+                handleViewTeachers();
+            } catch (error) {
+                console.error("Failed to add/update teacher:", error);
+                alert(`Error: ${error.message}`);
+            } finally {
+                 setFormSubmitting(addTeacherForm, false, submitBtn);
+                 clearTeacherForm();
+            }
+        });
+
+        viewAllTeachersBtn.addEventListener("click", handleViewTeachers);
+
+        async function handleViewTeachers() {
+            const token = sessionStorage.getItem("token");
+            teacherListLoader.style.display = "block";
+            viewAllTeachersBtn.disabled = true;
+            teacherList.innerHTML = "";
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/teachers`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const teachers = await response.json();
+                if (teachers.length === 0) {
+                    teacherList.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No teachers found.</td></tr>';
+                    return;
+                }
+                teachers.forEach(teacher => {
+                    const row = teacherList.insertRow();
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${teacher.username}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${teacher.department}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${teacher.email}</td>
+                        <td class="actions-cell">
+                            <button class="btn btn-secondary btn-small btn-edit-teacher" data-teacher='${JSON.stringify(teacher)}'>Update</button>
+                            <button class="btn btn-danger btn-small" data-id="${teacher.id}">Delete</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error("Failed to fetch teachers:", error);
+                alert("Error fetching teachers. Check console for details.");
+            } finally {
+                teacherListLoader.style.display = "none";
+                viewAllTeachersBtn.disabled = false;
+            }
+        }
+
+        teacherList.addEventListener("click", async (e) => {
+            const token = sessionStorage.getItem("token");
+            if (e.target.classList.contains("btn-danger")) {
+                const teacherId = e.target.getAttribute("data-id");
+                if (confirm(`Are you sure you want to delete teacher with ID ${teacherId}?`)) {
+                    e.target.disabled = true;
+                    e.target.innerHTML = smallSpinner;
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/admin/deleteTeacher/${teacherId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const resultText = await response.text();
+                        if (!response.ok) throw new Error(resultText);
+                        alert(resultText);
+                        e.target.closest("tr").remove();
+                    } catch (error) {
+                        console.error("Failed to delete teacher:", error);
+                        alert(`Error: ${error.message}`);
+                        e.target.disabled = false;
+                        e.target.innerHTML = 'Delete';
+                    }
+                }
+            }
+            if (e.target.classList.contains("btn-edit-teacher")) {
+                const teacher = JSON.parse(e.target.getAttribute("data-teacher"));
+                teacherFormFieldId.value = teacher.id;
+                teacherRegUsername.value = teacher.username;
+                teacherRegEmail.value = teacher.email;
+                teacherRegDept.value = teacher.department;
+                teacherRegPassword.value = "";
+                teacherRegPassword.placeholder = "Enter new password if changing";
+                addTeacherBtn.style.display = "none";
+                updateTeacherBtn.style.display = "block";
+                addTeacherForm.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        viewAllMarksBtn.addEventListener("click", async () => {
+            const token = sessionStorage.getItem("token");
+            allMarksListLoader.style.display = "block";
+            viewAllMarksBtn.disabled = true;
+            allMarksList.innerHTML = "";
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/viewStudentGrades`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const marks = await response.json();
+                if (marks.length === 0) {
+                    allMarksList.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No marks found.</td></tr>';
+                    return;
+                }
+                marks.forEach(mark => {
+                    const row = allMarksList.insertRow();
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.studentId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.subject}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.gradeObtained}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.totalgrade}</td>
+                    `;
+                });
+            } catch (error) {
+                console.error("Failed to fetch all marks:", error);
+                alert("Error fetching marks. Check console for details.");
+            } finally {
+                allMarksListLoader.style.display = "none";
+                viewAllMarksBtn.disabled = false;
+            }
+        });
+
+        studentManagementForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const isUpdating = !!studentFormFieldId.value;
+            const submitBtn = isUpdating ? updateStudentBtn : addStudentBtn;
+            setFormSubmitting(studentManagementForm, true, submitBtn);
+
+            const studentData = {
+                id: studentFormFieldId.value ? parseInt(studentFormFieldId.value) : null,
+                name: studentFieldName.value,
+                studentId: studentFieldId.value,
+                branch: studentFieldBranch.value,
+                year: parseInt(studentFieldYear.value),
+                password: studentFieldPassword.value
+            };
+
+            const token = sessionStorage.getItem("token");
+            const url = isUpdating ? `${API_BASE_URL}/teacher/updateStudent` : `${API_BASE_URL}/teacher/addStudent`;
+            const method = isUpdating ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(studentData)
+                });
+                if (!response.ok) { const errorText = await response.text(); throw new Error(errorText); }
+                if (isUpdating) {
+                    const updatedStudent = await response.json();
+                    alert(`Student ${updatedStudent.name} updated successfully!`);
+                } else {
+                    const resultText = await response.text();
+                    alert(resultText);
+                }
+                clearStudentForm();
+                handleViewStudents();
+            } catch (error) {
+                console.error("Failed to add/update student:", error);
+                alert(`Error: ${error.message}`);
+            } finally {
+                setFormSubmitting(studentManagementForm, false, submitBtn);
+            }
+        });
+
+        clearStudentFormBtn.addEventListener("click", clearStudentForm);
+
+        function clearStudentForm() {
+            studentManagementForm.reset();
+            studentFormFieldId.value = "";
+            studentFieldId.disabled = false;
+            addStudentBtn.style.display = "block";
+            updateStudentBtn.style.display = "none";
+            addStudentBtn.disabled = false;
+            addStudentBtn.innerHTML = 'Add Student';
+            updateStudentBtn.disabled = false;
+            updateStudentBtn.innerHTML = 'Update Student';
+        }
+
+        viewAllStudentsBtn.addEventListener("click", handleViewStudents);
+
+        async function handleViewStudents() {
+            const token = sessionStorage.getItem("token");
+            studentListLoader.style.display = "block";
+            viewAllStudentsBtn.disabled = true;
+            studentList.innerHTML = "";
+            try {
+                const response = await fetch(`${API_BASE_URL}/teacher/viewAllStudents`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const students = await response.json();
+
+                if (students.length === 0) {
+                    studentList.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 1rem;">No students found.</td></tr>';
+                    return;
+                }
+
+                students.forEach(student => {
+                    const row = studentList.insertRow();
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.studentId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.branch}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${student.year}</td>
+                        <td class="actions-cell">
+                            <button class="btn btn-secondary btn-small btn-edit-student" data-student='${JSON.stringify(student)}'>Update</button>
+                            <button class="btn btn-danger btn-small btn-delete-student" data-id="${student.id}">Delete</button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error("Failed to fetch students:", error);
+                alert("Error fetching students. Check console for details.");
+            } finally {
+                studentListLoader.style.display = "none";
+                viewAllStudentsBtn.disabled = false;
+            }
+        }
+
+        studentList.addEventListener("click", async (e) => {
+            const token = sessionStorage.getItem("token");
+            if (e.target.classList.contains("btn-delete-student")) {
+                const studentId = e.target.getAttribute("data-id");
+                if (confirm(`Are you sure you want to delete student with primary key ${studentId}?`)) {
+                    e.target.disabled = true;
+                    e.target.innerHTML = smallSpinner;
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/teacher/deleteStudent/${studentId}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const resultText = await response.text();
+                        if (!response.ok) throw new Error(resultText);
+                        alert(resultText);
+                        e.target.closest("tr").remove();
+                    } catch (error) {
+                        console.error("Failed to delete student:", error);
+                        alert(`Error: ${error.message}`);
+                        e.target.disabled = false;
+                        e.target.innerHTML = 'Delete';
+                    }
+                }
+            }
+            if (e.target.classList.contains("btn-edit-student")) {
+                const student = JSON.parse(e.target.getAttribute("data-student"));
+                studentFormFieldId.value = student.id;
+                studentFieldName.value = student.name;
+                studentFieldId.value = student.studentId;
+                studentFieldId.disabled = true;
+                studentFieldBranch.value = student.branch;
+                studentFieldYear.value = student.year;
+                studentFieldPassword.value = "";
+                studentFieldPassword.placeholder = "Enter new password if changing";
+                addStudentBtn.style.display = "none";
+                updateStudentBtn.style.display = "block";
+                studentManagementForm.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        assignMarksForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const submitter = e.submitter;
+            if (!submitter) return;
+
+            setFormSubmitting(assignMarksForm, true, submitter);
+
+            const token = sessionStorage.getItem("token");
+            const marksData = {
+                studentId: document.getElementById("marks-student-id").value,
+                subject: document.getElementById("marks-subject").value,
+                gradeObtained: parseFloat(document.getElementById("marks-obtained").value),
+                totalgrade: parseFloat(document.getElementById("marks-total").value)
+            };
+
+            let url, method, successMsg;
+
+            if (submitter.id === "assignGradesBtn") {
+                url = `${API_BASE_URL}/teacher/assignGrades`;
+                method = 'POST';
+                successMsg = 'Grades assigned successfully!';
+            } else if (submitter.id === "upgradeGradesBtn") {
+                url = `${API_BASE_URL}/teacher/upgradeGrades`;
+                method = 'PUT';
+                successMsg = 'Grades upgraded successfully!';
+            } else {
+                setFormSubmitting(assignMarksForm, false, submitter);
+                return;
+            }
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(marksData)
+                });
+                if (!response.ok) { const errorText = await response.text(); throw new Error(errorText); }
+                const savedMark = await response.json();
+                alert(`${successMsg} (ID: ${savedMark.id})`);
+                assignMarksForm.reset();
+            } catch (error) {
+                console.error(`Failed to ${method} grades:`, error);
+                alert(`Error: ${error.message}`);
+            } finally {
+                setFormSubmitting(assignMarksForm, false, submitter);
+            }
+        });
+
+        viewMyMarksBtn.addEventListener("click", async () => {
+            const token = sessionStorage.getItem("token");
+            myMarksListLoader.style.display = "block";
+            viewMyMarksBtn.disabled = true;
+            myMarksList.innerHTML = "";
+            try {
+                const response = await fetch(`${API_BASE_URL}/student/viewGrades`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const marks = await response.json();
+
+                if (marks.length === 0) {
+                    myMarksList.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 1rem;">No grades found.</td></tr>';
+                    return;
+                }
+
+                marks.forEach(mark => {
+                    const row = myMarksList.insertRow();
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.studentId}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.subject}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.gradeObtained}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${mark.totalgrade}</td>
+                    `;
+                });
+            } catch (error) {
+                console.error("Failed to fetch my grades:", error);
+                alert("Error fetching grades. Check console for details.");
+            } finally {
+                myMarksListLoader.style.display = "none";
+                viewMyMarksBtn.disabled = false;
+            }
+        })
+
+        checkSession();
+
+    });
+</script>
+
+</body>
+</html>
